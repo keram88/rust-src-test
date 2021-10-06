@@ -362,6 +362,12 @@ impl String {
     #[inline]
     #[rustc_const_stable(feature = "const_string_new", since = "1.32.0")]
     #[stable(feature = "rust1", since = "1.0.0")]
+    #[cfg(verifier = "smack")]
+    pub fn new() -> String {
+        String { vec: Vec::new() }
+    }
+
+    #[cfg(not(verifier = "smack"))]
     pub const fn new() -> String {
         String { vec: Vec::new() }
     }

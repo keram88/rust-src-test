@@ -94,6 +94,15 @@ impl<T, A: Allocator> IntoIter<T, A> {
 
     /// Relinquishes the backing allocation, equivalent to
     /// `ptr::write(&mut self, Vec::new().into_iter())`
+    #[cfg(verifier = "smack")]
+    pub(super) fn forget_allocation(&mut self) {
+        self.cap = 0;
+        self.buf = unsafe { NonNull::new_unchecked(RawVec::new().ptr()) };
+        self.ptr = self.buf.as_ptr();
+        self.end = self.buf.as_ptr();
+    }
+
+    #[cfg(not(verifier = "smack"))]
     pub(super) fn forget_allocation(&mut self) {
         self.cap = 0;
         self.buf = unsafe { NonNull::new_unchecked(RawVec::NEW.ptr()) };

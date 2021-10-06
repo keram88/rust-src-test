@@ -64,6 +64,7 @@ impl<T> RawVec<T, Global> {
     /// with `min_const_fn` but does not necessarily allow calling it in
     /// `stable(...) const fn` / user code not enabling `foo` when
     /// `#[rustc_const_unstable(feature = "foo", issue = "01234")]` is present.
+    #[cfg(not(verifier = "smack"))]
     pub const NEW: Self = Self::new();
 
     /// Creates the biggest possible `RawVec` (on the system heap)
@@ -71,6 +72,12 @@ impl<T> RawVec<T, Global> {
     /// `RawVec` with capacity `0`. If `T` is zero-sized, then it makes a
     /// `RawVec` with capacity `usize::MAX`. Useful for implementing
     /// delayed allocation.
+    #[cfg(verifier = "smack")]
+    pub fn new() -> Self {
+        Self::with_capacity_in(32, Global)
+    }
+
+    #[cfg(not(verifier = "smack"))]
     pub const fn new() -> Self {
         Self::new_in(Global)
     }
